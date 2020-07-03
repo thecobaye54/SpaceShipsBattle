@@ -13,7 +13,11 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.player_ship_img = pygame.image.load("res/sprites/spaceship.png")
-        self.player = SpaceShip((200, 200), 10, self.player_ship_img)
+        self.bullet_img = pygame.image.load("res/sprites/bullet.png")
+
+        self.player = SpaceShip((200, 200), 10, self.player_ship_img, self.bullet_img)
+
+        self.player_bullet_group = pygame.sprite.Group()
 
         self.start()
 
@@ -35,7 +39,11 @@ class Game:
     def manage_events(self, evt):
         if evt.type == QUIT:
             self.is_running = False
-        # On va gérer d'autres évènements
+        if evt.type == KEYDOWN:
+            if evt.key == K_SPACE:
+                bullet = self.player.fire()
+                if bullet:
+                    self.player_bullet_group.add(bullet)
 
     def manage_pressed_keys(self):
         pressed = pygame.key.get_pressed()
@@ -54,11 +62,14 @@ class Game:
 
     def draw(self):
         self.screen.blit(self.player.image, self.player.rect)
+        self.player_bullet_group.draw(self.screen)
 
     def update(self):
         self.screen.fill(50)
 
         self.player.update()
+        self.player_bullet_group.update()
+
         self.draw()
 
         self.clock.tick(50)
