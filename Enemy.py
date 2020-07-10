@@ -22,7 +22,7 @@ class Enemy(SpaceShip):
         self.clockwise = False
 
         # Fire System
-        self.fire_timer_range = [ 0.8, 1.2 ]
+        self.fire_timer_range = [ 1.2, 1.5 ]
         self.fire_timer_start = time.time()
         self.fire_timer = self.calculate_timer(self.fire_timer_range)
 

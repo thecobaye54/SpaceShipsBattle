@@ -23,7 +23,7 @@ class EnemyManager:
         self.ellipse = (self.res[0]/2 - 20, self.res[1]/2 - 10)
 
         self.level = 1
-        self.spawn(self.level + 2)
+        self.spawn(self.level)
 
 
     def update(self):

@@ -88,21 +88,40 @@ class Game:
         self.enemy_manager.draw(self.screen)
 
         self.player_bullet_group.draw(self.screen)
+    
+    def manage_collision(self):
+        for enemy in self.enemy_manager.sprite_group.sprites():
+            for bullet in pygame.sprite.spritecollide(enemy, self.player_bullet_group, False):
+                enemy.kill()
+                bullet.kill()
+                del enemy
+                del bullet
+                # Score !!!!
+        
+        for bullet in pygame.sprite.spritecollide(self.player, self.enemy_manager.bullet_group, False):
+            bullet.kill()
+            del bullet
+            del self.player
 
-    def clear_bullets(self):
-        for bullet in self.player_bullet_group.sprites():
+            print("Game Over")
+            self.quit()
+
+
+    def clear_bullets(self, group):
+        for bullet in group.sprites():
             if bullet.rect.centerx < self.bords[0][0] or bullet.rect.centerx > self.bords[0][1]:
-                self.player_bullet_group.remove(bullet)
+                group.remove(bullet)
             if bullet.rect.centery < self.bords[1][0] or bullet.rect.centery > self.bords[1][1]:
-                self.player_bullet_group.remove(bullet)
-            if bullet not in self.player_bullet_group.sprites():
+                group.remove(bullet)
+            if bullet not in group.sprites():
                 del bullet
                 
 
     def update(self):
         self.screen.blit(self.bg_img, (0, 0))
 
-        self.clear_bullets()
+        self.clear_bullets(self.player_bullet_group)
+        self.clear_bullets(self.enemy_manager.bullet_group)
 
         self.player.update()
         self.player_bullet_group.update()
@@ -111,6 +130,8 @@ class Game:
 
         self.draw()
 
+        self.manage_collision()
+
         self.clock.tick(50)
         pygame.display.update()
     
@@ -118,3 +139,4 @@ class Game:
         pygame.display.quit()
         pygame.quit()
         del self
+        quit()
