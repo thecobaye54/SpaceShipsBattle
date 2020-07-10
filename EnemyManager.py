@@ -9,6 +9,7 @@ class EnemyManager:
         self.player = player
 
         self.sprite_group = pygame.sprite.Group()
+        self.bullet_group = pygame.sprite.Group()
 
         # Images
         self.bullet_img = pygame.image.load("res/sprites/bullet.png")
@@ -22,7 +23,7 @@ class EnemyManager:
         self.ellipse = (self.res[0]/2 - 20, self.res[1]/2 - 10)
 
         self.level = 1
-        self.spawn(self.level)
+        self.spawn(self.level + 2)
 
 
     def update(self):
@@ -31,11 +32,16 @@ class EnemyManager:
             self.spawn(self.level)
 
         for enemy in self.sprite_group.sprites():
-            enemy.pre_update(self.player)
+            bullet = enemy.pre_update(self.player)
+            if bullet:
+                self.bullet_group.add(bullet)
+
         self.sprite_group.update()
+        self.bullet_group.update()
 
     def draw(self, surface):
         self.sprite_group.draw(surface)
+        self.bullet_group.draw(surface)
     
     def spawn(self, n):
         for k in range(n):
