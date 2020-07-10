@@ -1,8 +1,13 @@
 import pygame
 from pygame.locals import *
+import time
 
 from SpaceShip import *
 from EnemyManager import EnemyManager
+
+from Text import *
+
+pygame.mixer.init()
 
 class Game:
     def __init__(self, res):
@@ -28,6 +33,13 @@ class Game:
         self.player_bullet_group = pygame.sprite.Group()
 
         self.enemy_manager = EnemyManager(self.res, self.player)
+        
+        self.score = 0
+        self.score_font_size = 40
+        self.score_text_pos = ( self.res[0]/2, 30 )
+
+        self.game_over_timer = 1
+        self.game_over_timer_start = 0
 
         self.start()
 
@@ -94,18 +106,23 @@ class Game:
             for bullet in pygame.sprite.spritecollide(enemy, self.player_bullet_group, False):
                 enemy.kill()
                 bullet.kill()
+                enemy.play_explo_sound()
                 del enemy
                 del bullet
-                # Score !!!!
+                score += 1
         
         for bullet in pygame.sprite.spritecollide(self.player, self.enemy_manager.bullet_group, False):
             bullet.kill()
+            self.player.play_explo_sound()
+
             del bullet
             del self.player
 
-            print("Game Over")
-            self.quit()
+            self.game_over()
 
+
+    def draw_score(self):
+        screen_text("Score : " + str(self.score), self.score_font_size, pygame.Color(255, 255, 255, 255), self.screen, self.score_text_pos)
 
     def clear_bullets(self, group):
         for bullet in group.sprites():
@@ -129,11 +146,24 @@ class Game:
         self.enemy_manager.update()
 
         self.draw()
+        self.draw_score()
 
         self.manage_collision()
 
         self.clock.tick(50)
         pygame.display.update()
+    
+    def game_over(self):
+        self.game_over_timer_start = time.time()
+
+        while time.time() - self.game_over_timer_start < self.game_over_timer:
+            self.screen.fill(pygame.Color(0, 0, 0, 255))
+
+            screen_text("Game Over !!!", 70, pygame.Color(255, 0, 0, 255), self.screen, (self.res[0]/2, self.res[1]/2))
+
+            pygame.display.update()
+        
+        self.quit()
     
     def quit(self):
         pygame.display.quit()
